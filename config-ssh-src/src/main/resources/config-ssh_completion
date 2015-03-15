@@ -1,0 +1,29 @@
+prg=$( basename "${BASH_SOURCE[0]}" )
+
+_config-ssh()
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts=$( ${prg%_completion*} shortlist )
+
+    if [ $COMP_CWORD -eq 1 ]; then
+        COMPREPLY=( $(compgen -W "${opts}" -- $cur) )
+    elif [ $COMP_CWORD -eq 2 ]; then
+        case "$prev" in
+            multi)
+                local multi_cmds="one two three"
+                COMPREPLY=( $(compgen -W "${multi_cmds}" -- $cur) )
+                return 0
+                ;;
+            show)
+                local show_opts=$( awk '{ORS=" "}/^Host [^\*]/{print $2}' ~/.ssh/config )
+                COMPREPLY=( $(compgen -W "${show_opts}" -- $cur) )
+                return 0
+                ;;
+        esac
+    fi
+    return 0    
+}
+complete -F _config-ssh "${prg%_completion*}"

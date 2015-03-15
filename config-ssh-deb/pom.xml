@@ -1,0 +1,106 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.jmamcallister</groupId>
+        <artifactId>config-ssh</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+    </parent>
+    
+    <artifactId>config-ssh-deb</artifactId>
+
+    <name>[${project.parent.artifactId}] Config SSH DEB Module</name>
+    <description>Manage local SSH configuration</description>
+
+    <properties>
+        <deb.files.location>${project.build.directory}/dependency/${project.parent.artifactId}-src-${project.parent.version}</deb.files.location>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase/>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-src-module</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.parent.groupId}</groupId>
+                                    <artifactId>${project.parent.artifactId}-src</artifactId>
+                                    <version>${project.parent.version}</version>
+                                    <type>tar.gz</type>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.vafer</groupId>
+                <artifactId>jdeb</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jdeb</goal>
+                        </goals>
+                        <configuration>
+                            <verbose>true</verbose>
+                            <dataSet>
+                                <data>
+                                    <!-- <src>src/deb/files/config-ssh</src> -->
+                                    <src>${deb.files.location}/config-ssh</src>
+                                    <type>file</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <prefix>/usr/local/bin</prefix>
+                                        <filemode>755</filemode>
+                                    </mapper>
+                                </data>
+                                <data>
+                                    <!-- <src>src/deb/files/config-ssh.conf</src> -->
+                                    <src>${deb.files.location}/config-ssh.conf</src>
+                                    <type>file</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <prefix>/usr/local/etc</prefix>
+                                        <filemode>644</filemode>
+                                    </mapper>
+                                </data>
+                                <data>
+                                    <!-- <src>src/deb/files/config-ssh_completion</src> -->
+                                    <src>${deb.files.location}/config-ssh_completion</src>
+                                    <type>file</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <prefix>/usr/local/etc</prefix>
+                                        <filemode>644</filemode>
+                                    </mapper>
+                                </data>
+                            </dataSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
